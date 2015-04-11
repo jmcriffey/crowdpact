@@ -104,8 +104,6 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, '../static/build'),
 )
 
-STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
-
 execfile(os.path.join(os.path.dirname(__file__), 'database.py'))
 
 # Custom user model
