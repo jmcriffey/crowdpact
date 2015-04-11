@@ -46,8 +46,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django_extensions',
     'crowdpact.apps.account',
-    'crowdpact.apps.pact',
-    'whitenoise'
+    'crowdpact.apps.pact'
 )
 
 MIDDLEWARE_CLASSES = (
