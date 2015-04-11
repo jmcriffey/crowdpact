@@ -33,4 +33,4 @@ class Account(PermissionsMixin, AbstractBaseUser):
         return self.username
 
     def __unicode__(self):
-        return self.username
+        return u'{0}'.format(self.username)
