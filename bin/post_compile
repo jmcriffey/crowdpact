@@ -28,3 +28,6 @@ ln -s -f ../../vendor/node/bin/npm .heroku/python/bin/npm
 
 # Run Migrations
 python manage.py migrate
+
+# Build JS
+(cd crowdpact/static && npm run build)
