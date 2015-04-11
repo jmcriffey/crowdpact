@@ -46,7 +46,8 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django_extensions',
     'crowdpact.apps.account',
-    'crowdpact.apps.pact'
+    'crowdpact.apps.pact',
+    'whitenoise'
 )
 
 MIDDLEWARE_CLASSES = (
@@ -103,6 +104,8 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, '../static/build'),
 )
+
+STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
 
 execfile(os.path.join(os.path.dirname(__file__), 'database.py'))
 

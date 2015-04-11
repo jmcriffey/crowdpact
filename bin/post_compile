@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 set -eo pipefail
 
+# Install Node
 NODE_VERSION=0.10.38
 NODE_BASENAME=node-v${NODE_VERSION}-linux-x64
 NODE_ARCHIVE="http://nodejs.org/dist/v${NODE_VERSION}/${NODE_BASENAME}.tar.gz"
 
-# make a temp directory
 tempdir="$( mktemp -t node_XXXX )"
 rm -rf $tempdir
 mkdir -p $tempdir
@@ -26,4 +26,5 @@ ln -s -f ../../vendor/node/bin/node .heroku/python/bin/node
 ln -s -f ../../vendor/node/bin/node-waf .heroku/python/bin/node-waf
 ln -s -f ../../vendor/node/bin/npm .heroku/python/bin/npm
 
+# Run Migrations
 python manage.py migrate
