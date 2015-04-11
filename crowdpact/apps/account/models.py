@@ -3,6 +3,9 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, UserM
 
 
 class Account(PermissionsMixin, AbstractBaseUser):
+    """
+    Custom user model for a given user of crowdpact.
+    """
     # Required fields
     username = models.TextField(unique=True)
     email = models.EmailField('email address')
