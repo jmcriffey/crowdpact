@@ -23,5 +23,8 @@ class Pledge(models.Model):
     pact = models.ForeignKey('pact.Pact')
     created = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        unique_together = ('account', 'pact',)
+
     def __unicode__(self):
         return u'{0} {1}'.format(self.account.username, self.pact.name)
