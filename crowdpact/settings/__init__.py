@@ -102,3 +102,6 @@ STATICFILES_DIRS = (
 )
 
 execfile(os.path.join(os.path.dirname(__file__), 'database.py'))
+
+# Custom user model
+AUTH_USER_MODEL = 'account.Account'
