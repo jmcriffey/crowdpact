@@ -1,0 +1,18 @@
+check:
+    global:
+        branches: 10
+        functions: 10
+        lines: 10
+        statements: 10
+instrumentation:
+    root: js
+reporting:
+    reports:
+        - html
+        - lcovonly
+    dir: .coverage
+    watermarks:
+        branches: [90, 100]
+        functions: [90, 100]
+        statements: [90, 100]
+        lines: [90, 100]
