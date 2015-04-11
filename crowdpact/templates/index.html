@@ -1,17 +1,17 @@
 <!doctype html> {% load staticfiles %}
 <html>
     <head>
-        <title>{{ title }}</title>
+        <title>CrowdPact | {{ title }}</title>
     </head>
     <body>
-        <div class="crowdpact"></div>
+        <div id="crowdpact"></div>
 
-        {% if debug %}
-            <script src="{% static 'build/crowdpact.js' %}"></script>
-        {% else %}
-            <script src="{% static 'build/crowdpact.min.js' %}"></script>
-        {% endif %}
+        <script src="{% static 'crowdpact.js' %}"></script>
 
-        <script>{{ renderer }}();</script>
+        <script>
+            var mountNode = document.getElementById('crowdpact');
+
+            CrowdPact.render('{{ app }}', mountNode);
+        </script>
     </body>
 </html>

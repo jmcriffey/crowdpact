@@ -4,11 +4,11 @@
   "description": "The frontend for crowdpact.",
   "main": "index.js",
   "scripts": {
-    "build": "mkdir -p build && browserify js/apps/**/app.js -o build/crowdpact.js && uglifyjs build/crowdpact.js -o build/crowdpact.min.js",
+    "build": "mkdir -p build && browserify js/crowdpact.js -o build/crowdpact.js && uglifyjs build/crowdpact.js -o build/crowdpact.min.js",
     "check_coverage": "babel-istanbul check-coverage .coverage/coverage.json",
-    "cover": "babel-node node_modules/.bin/babel-istanbul cover _mocha -- --require .mocha.js --recursive js",
+    "cover": "babel-node node_modules/.bin/babel-istanbul cover _mocha -- --recursive js",
     "lint": "eslint js",
-    "test": "npm run lint"
+    "test": "npm run lint && npm run cover && npm run check_coverage"
   },
   "repository": {
     "type": "git",
