@@ -13,12 +13,14 @@ class Account(PermissionsMixin, AbstractBaseUser):
     location = models.TextField(null=True, blank=True, default=None)
     website = models.URLField(null=True, blank=True, default=None)
     photo = models.TextField(null=True, blank=True, default=None)
-    is_active = models.BooleanField(default=False)
-    is_admin = models.BooleanField(default=False)
-    is_staff = models.BooleanField(default=False)
 
     # Auto fields
     date_joined = models.DateTimeField(auto_now_add=True)
+
+    # Required by Django
+    is_active = models.BooleanField(default=False)
+    is_admin = models.BooleanField(default=False)
+    is_staff = models.BooleanField(default=False)
 
     objects = UserManager()
 
