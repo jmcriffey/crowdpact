@@ -40,9 +40,11 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_dynamic_fixture',
     'django_extensions',
     'crowdpact.apps.account',
-    'crowdpact.apps.pact'
+    'crowdpact.apps.pact',
+    'crowdpact.apps.pact.tests',
 )
 
 MIDDLEWARE_CLASSES = (
