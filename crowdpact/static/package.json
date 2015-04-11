@@ -1,0 +1,55 @@
+{
+  "name": "crowdpact",
+  "version": "0.0.1",
+  "description": "The frontend for crowdpact.",
+  "main": "index.js",
+  "scripts": {
+    "build": "mkdir -p build && browserify js/apps/**/app.js -o build/crowdpact.js && uglifyjs build/crowdpact.js -o build/crowdpact.min.js",
+    "check_coverage": "babel-istanbul check-coverage .coverage/coverage.json",
+    "cover": "babel-node node_modules/.bin/babel-istanbul cover _mocha -- --require .mocha.js --recursive js",
+    "lint": "eslint js",
+    "test": "npm run lint"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/joshmarlow/crowdpact.git"
+  },
+  "author": "Jeff McRiffey",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/joshmarlow/crowdpact/issues"
+  },
+  "homepage": "https://github.com/joshmarlow/crowdpact",
+  "dependencies": {
+    "babel-runtime": "^5.0.12",
+    "react": "^0.13.1",
+    "reflux": "^0.2.7"
+  },
+  "devDependencies": {
+    "babel": "^5.0.12",
+    "babel-istanbul": "^0.1.0",
+    "babelify": "^6.0.2",
+    "browserify": "^9.0.8",
+    "eslint": "^0.18.0",
+    "mocha": "^2.2.4",
+    "uglify-js": "^2.4.19"
+  },
+  "browserify": {
+    "require": [
+      "react",
+      "reflux"
+    ],
+    "noparse": [
+      "react",
+      "reflux"
+    ],
+    "transform": [
+      [
+        "babelify",
+        {
+          "optional": "runtime"
+        }
+      ]
+    ]
+  }
+}

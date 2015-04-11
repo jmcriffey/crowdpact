@@ -1,0 +1,17 @@
+<!doctype html> {% load staticfiles %}
+<html>
+    <head>
+        <title>{{ title }}</title>
+    </head>
+    <body>
+        <div class="crowdpact"></div>
+
+        {% if debug %}
+            <script src="{% static 'build/crowdpact.js' %}"></script>
+        {% else %}
+            <script src="{% static 'build/crowdpact.min.js' %}"></script>
+        {% endif %}
+
+        <script>{{ renderer }}();</script>
+    </body>
+</html>
