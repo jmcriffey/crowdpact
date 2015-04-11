@@ -1,4 +1,7 @@
+from datetime import datetime
+
 from django.db import IntegrityError, models, transaction
+from pytz import utc as utc_tz
 
 from crowdpact.apps.event.models import Event
 
@@ -35,6 +38,9 @@ class Pact(models.Model):
 
     @property
     def has_enough_pledges(self):
+        """
+        Does this Pact have enough pledges?
+        """
         return self.pledge_count >= self.goal
 
     @property
@@ -43,6 +49,13 @@ class Pact(models.Model):
         Return the number of pledges for this Pact.
         """
         return self.pledge_set.count()
+
+    @property
+    def is_ongoing(self):
+        """
+        Return if the pledge is still ongoing (ie, we've not hit the deadline).
+        """
+        return utc_tz.localize(datetime.utcnow()) < self.deadline
 
     def pledge(self, user):
         """
@@ -112,6 +125,6 @@ class Pledge(models.Model):
     def save(self, *args, **kwargs):
         super(Pledge, self).save(*args, **kwargs)
 
-        if self.pact.has_enough_pledges:
+        if self.pact.has_enough_pledges and self.pact.is_ongoing:
             if not self.pact.goal_met:
                 self.pact.set_goal_suceeded()

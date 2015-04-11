@@ -2,7 +2,9 @@ from datetime import datetime
 
 from django.test import TestCase, TransactionTestCase
 from django_dynamic_fixture import G
+from freezegun import freeze_time
 from mock import patch
+from pytz import utc as utc_tz
 
 from crowdpact.apps.account.models import Account
 from crowdpact.apps.event.models import Event
@@ -41,13 +43,16 @@ class PactTests(TestCase):
         the Pact is updated and an Event is created appropriately.
         """
         # Setup scenario
-        pact = G(Pact, goal=2)
+        now = utc_tz.localize(datetime(2015, 6, 1))
+        deadline = utc_tz.localize(datetime(2015, 6, 6))
+        pact = G(Pact, goal=2, deadline=deadline)
 
         # Verify initial assumptions
         self.assertEquals(0, Event.objects.count())
 
         # Run code
-        G(Pledge, pact=pact)
+        with freeze_time(now):
+            G(Pledge, pact=pact)
 
         # Run code and verify expectations
         self.assertEqual(2, pact.pledge_count)
@@ -84,6 +89,26 @@ class PactTests(TestCase):
         """
         # Setup scenario
         pact = G(Pact, goal=3)
+
+        # Verify initial assumptions
+        self.assertEquals(0, Event.objects.count())
+
+        # Run code
+        G(Pledge, pact=pact)
+
+        # Run code and verify expectations
+        self.assertEqual(2, pact.pledge_count)
+        self.assertEquals(0, Event.objects.count())
+        self.assertFalse(notify_users.called)
+
+    @patch.object(Event, 'notify_users', spec_set=True)
+    def test_pledge_creation_does_not_trigger_pact_success_after_deadline(self, notify_users):
+        """
+        Verify that when if we create a last pledge the Pact success case is not triggered if we
+        haven't yet met our goal.
+        """
+        # Setup scenario
+        pact = G(Pact, goal=1, deadline=utc_tz.localize(datetime(2000, 1, 1)))
 
         # Verify initial assumptions
         self.assertEquals(0, Event.objects.count())
