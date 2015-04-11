@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+set -eo pipefail
+
+# Run Migrations
+python manage.py migrate
+
+# Build JS
+(cd crowdpact/static && npm install && npm run build)
+
+# Collectstatic
+python manage.py collectstatic --noinput
