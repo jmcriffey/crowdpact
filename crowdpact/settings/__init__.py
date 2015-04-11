@@ -47,6 +47,7 @@ INSTALLED_APPS = (
     'django_dynamic_fixture',
     'django_extensions',
     'crowdpact.apps.account',
+    'crowdpact.apps.event',
     'crowdpact.apps.pact',
     'crowdpact.apps.pact.tests',
 )
@@ -92,7 +93,7 @@ TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
-USE_L10N = True
+USE_L10N = False
 
 USE_TZ = True
 

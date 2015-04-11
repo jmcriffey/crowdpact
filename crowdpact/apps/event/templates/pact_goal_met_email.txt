@@ -1,0 +1,7 @@
+{{ subject }}
+
+{% if met_goal %}
+    Pact {{ pact }} has succeeded!
+{% else %}
+    Pact {{ pact }} has failed.
+{% endif %}
