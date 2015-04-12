@@ -26,7 +26,7 @@ class ConfigureEmailView(generics.GenericAPIView):
     permission_classes = (IsAuthenticated,)
 
     def post(self, request, *args, **kwargs):
-        send_emails = request.DATA.get('pact_id', request.user.send_email_notifications)
+        send_emails = request.DATA.get('send_email_notifications', request.user.send_email_notifications)
         request.user.send_email_notifications = send_emails
         request.user.save(update_fields=['send_email_notifications'])
 
