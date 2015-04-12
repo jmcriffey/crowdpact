@@ -26,6 +26,22 @@ class EventTests(TestCase):
         self.assertTrue(EmailNotification.objects.filter(account=act, event=evt, sent=False).exists())
         self.assertTrue(SiteNotification.objects.filter(account=act, event=evt, read=False).exists())
 
+    def test_create_notifications_for_users_respects_account_email_preference(self):
+        """
+        Test that calling create_notifications_for_users will not create EmailNotification
+        records for that event if the account does not want emails.
+        """
+        # Setup scenario
+        act = G(Account, send_email_notifications=False)
+        evt = G(Event, context={})
+
+        # Run code
+        create_notifications_for_users([act], evt)
+
+        # Verify expectations
+        self.assertFalse(EmailNotification.objects.filter(account=act, event=evt, sent=False).exists())
+        self.assertTrue(SiteNotification.objects.filter(account=act, event=evt, read=False).exists())
+
     @patch.object(EmailNotification, 'send', spec_set=True)
     def test_send_notifications(self, send):
         # Setup scenario

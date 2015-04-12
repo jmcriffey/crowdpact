@@ -12,10 +12,10 @@ def create_notifications_for_users(accounts, event):
     ])
 
     # Create EmailNotifications for all users
-    # TODO: add an ability to disable this for each user
     EmailNotification.objects.bulk_create([
         EmailNotification(account=act, event=event)
         for act in accounts
+        if act.send_email_notifications
     ])
 
 

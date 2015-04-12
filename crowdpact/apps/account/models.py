@@ -19,6 +19,7 @@ class Account(PermissionsMixin, AbstractBaseUser):
 
     # Auto fields
     date_joined = models.DateTimeField(auto_now_add=True)
+    send_email_notifications = models.BooleanField(default=True)
 
     # Required by Django
     is_active = models.BooleanField(default=False)
