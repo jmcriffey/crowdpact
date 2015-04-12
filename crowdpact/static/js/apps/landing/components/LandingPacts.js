@@ -17,6 +17,7 @@ class LandingPacts extends React.Component {
             let items = pact.get('items').map((item, j) => {
                 return (
                     <div className="pact-item" key={j}>
+                        {item.get('name')}
                     </div>
                 );
             });
