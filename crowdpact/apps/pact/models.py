@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from django.db import IntegrityError, models, transaction
+from django.db.models import Count
 from pytz import utc as utc_tz
 
 from crowdpact.apps.event.models import Event
@@ -19,6 +20,24 @@ class PactManager(models.Manager):
         Return all of the Pacts created by this user.
         """
         return self.filter(creator=user)
+
+    def get_most_popular(self):
+        """
+        Return the most popular Pacts by pledge count.
+        """
+        return Pact.objects.annotate(pledge_count_annotation=Count('pledge')).order_by('-pledge_count_annotation')
+
+    def get_newest(self):
+        """
+        Return all packs ordered by newness.
+        """
+        return Pact.objects.order_by('-creation_time')
+
+    def get_ending_soon(self):
+        """
+        Return all Pacts ordered by time deadline.
+        """
+        return Pact.objects.filter(deadline__gt=utc_tz.localize(datetime.utcnow)).order_by('deadline')
 
     def search(self, search_string, tokenize=False):
         """
@@ -58,6 +77,7 @@ class Pact(models.Model):
     description = models.TextField()
     goal = models.IntegerField()
     deadline = models.DateTimeField()
+    creation_time = models.DateTimeField(auto_now_add=True)
 
     # State variables for handling the endgame
     goal_met = models.BooleanField(default=False)
@@ -86,7 +106,7 @@ class Pact(models.Model):
         """
         return utc_tz.localize(datetime.utcnow()) < self.deadline
 
-    def pledge(self, user):
+    def make_pledge(self, user):
         """
         create a plege for this user for this pact.
         """
