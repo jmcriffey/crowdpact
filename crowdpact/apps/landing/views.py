@@ -1,10 +1,22 @@
 from django.core.urlresolvers import reverse
+from django.shortcuts import redirect
 
+from crowdpact.apps.pact import models as pact_models, serializers as pact_serializers
 from crowdpact.views import CrowdPactTemplateView
 
 
 class LandingView(CrowdPactTemplateView):
+    react_app = 'LandingApp'
     title = 'CrowdPact - It\'s where crowds make pacts.'
+
+    def get(self, request, *args, **kwargs):
+        """
+        Redirects the user if they are already logged in.
+        """
+        if request.user.is_authenticated():
+            return redirect('pact.index')
+
+        return super(LandingView, self).get(request, *args, **kwargs)
 
     def get_page_data(self):
         page_data = super(LandingView, self).get_page_data()
@@ -14,22 +26,13 @@ class LandingView(CrowdPactTemplateView):
         page_data['landing_text_small'] = 'It\'s where crowds make pacts.'
         page_data['pacts'] = [{
             'title': 'Most Popular',
-            'items': self.get_most_popular_pacts()
+            'items': pact_serializers.PactSerializer(pact_models.Pact.objects.all().most_popular, many=True).data
         }, {
             'title': 'Newest',
-            'items': self.get_newest_pacts()
+            'items': pact_serializers.PactSerializer(pact_models.Pact.objects.all().newest, many=True).data
         }, {
             'title': 'Ending Soon',
-            'items': self.get_ending_soon()
+            'items': pact_serializers.PactSerializer(pact_models.Pact.objects.all().ending_soon, many=True).data
         }]
 
         return page_data
-
-    def get_most_popular_pacts(self):
-        return []
-
-    def get_newest_pacts(self):
-        return []
-
-    def get_ending_soon(self):
-        return []

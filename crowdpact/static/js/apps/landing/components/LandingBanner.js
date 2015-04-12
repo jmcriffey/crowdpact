@@ -5,6 +5,7 @@ class LandingBanner extends React.Component {
     constructor(...args) {
         super(...args);
 
+        this.onLogin = this.onLogin.bind(this);
         this.onSignup = this.onSignup.bind(this);
     }
 
@@ -13,7 +14,7 @@ class LandingBanner extends React.Component {
             <div className="landing-banner">
                 <div className="container">
                     {this.renderAbout()}
-                    {this.renderSignup()}
+                    {this.renderForm()}
                 </div>
             </div>
         );
@@ -28,6 +29,32 @@ class LandingBanner extends React.Component {
                 <div className="about-small">
                     {this.props.pageData.get('landing_text_small')}
                 </div>
+            </div>
+        );
+    }
+
+    renderForm() {
+        return (
+            this.props.data.get('showLogin') ?
+            this.renderLogin() :
+            this.renderSignup()
+        );
+    }
+
+    renderLogin() {
+        return (
+            <div className="landing-login">
+                <form className="landing-login-form" ref="loginForm">
+                    <input
+                    name="csrfmiddlewaretoken"
+                    type="hidden"
+                    value={this.props.pageData.get('csrf_token')} />
+
+                    <input placeholder="Your username" name="username" ref="username" type="text" />
+                    <input placeholder="Your password" name="password" ref="password" type="password" />
+
+                    <button onClick={this.onLogin} type="button">Login to CrowdPact</button>
+                </form>
             </div>
         );
     }
@@ -51,13 +78,32 @@ class LandingBanner extends React.Component {
         );
     }
 
+    onLogin() {
+        fetch(this.props.pageData.get('login_url'), {
+            body: new FormData(React.findDOMNode(this.refs.loginForm)),
+            method: 'POST'
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.next) {
+                window.location = data.next;
+            }
+        })
+        .catch(err => console.error(err));
+    }
+
     onSignup() {
         fetch(this.props.pageData.get('signup_url'), {
             body: new FormData(React.findDOMNode(this.refs.signupForm)),
             method: 'POST'
         })
         .then(res => res.json())
-        .then(data => console.log(data));
+        .then(data => {
+            if (data.next) {
+                window.location = data.next;
+            }
+        })
+        .catch(err => console.error(err));
     }
 }
 

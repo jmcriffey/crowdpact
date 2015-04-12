@@ -3,10 +3,12 @@ import React from 'react';
 import 'whatwg-fetch';
 
 import LandingApp from './apps/landing/components/LandingApp';
+import PactHomeApp from './apps/pact/home/components/PactHomeApp';
 
 
 const APPS = {
-    LandingApp
+    LandingApp,
+    PactHomeApp
 };
 
 global.CrowdPact = {
