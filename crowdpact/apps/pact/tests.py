@@ -36,8 +36,10 @@ class PactTests(TestCase):
         # Verify expectations
         self.assertEqual(1, Pledge.objects.filter(pact=pact).count())
 
-    @patch.object(Event, 'notify_users', spec_set=True)
-    def test_pledge_creation_triggers_pact_success_when_goal_met(self, notify_users):
+    @patch('crowdpact.apps.pact.models.send_notifications', spec_set=True)
+    @patch('crowdpact.apps.pact.models.create_notifications_for_users', spec_set=True)
+    def test_pledge_creation_triggers_pact_success_when_goal_met(
+            self, create_notifications_for_users, send_notifications):
         """
         Verify that when we create the last pledge needed to meet a Pact's goal,
         the Pact is updated and an Event is created appropriately.
@@ -63,10 +65,14 @@ class PactTests(TestCase):
             'met_goal': True,
         }, Event.objects.get(name='pact_goal_met').context)
         self.assertEquals(
-            set(pact.pledge_set.values_list('pk')), set(notify_users.call_args_list[0][0][0].values_list('pk')))
+            set(pact.pledge_set.values_list('pk')),
+            set(create_notifications_for_users.call_args_list[0][0][0].values_list('pk')))
+        self.assertEquals(1, send_notifications.call_count)
 
-    @patch.object(Event, 'notify_users', spec_set=True)
-    def test_pledge_creation_does_not_trigger_pact_success_when_goal_not_met(self, notify_users):
+    @patch('crowdpact.apps.pact.models.send_notifications', spec_set=True)
+    @patch('crowdpact.apps.pact.models.create_notifications_for_users', spec_set=True)
+    def test_pledge_creation_does_not_trigger_pact_success_when_goal_not_met(
+            self, create_notifications_for_users, send_notifications):
         """
         Verify that when if a goal has already been met, we don't trigger success logic with further pledges.
         """
@@ -79,10 +85,13 @@ class PactTests(TestCase):
         # Run code and verify expectations
         self.assertEqual(2, pact.pledge_count)
         self.assertEquals(0, Event.objects.count())
-        self.assertFalse(notify_users.called)
+        self.assertFalse(create_notifications_for_users.called)
+        self.assertFalse(send_notifications.called)
 
-    @patch.object(Event, 'notify_users', spec_set=True)
-    def test_pledge_creation_does_not_trigger_pact_success_when_goal_already_met(self, notify_users):
+    @patch('crowdpact.apps.pact.models.send_notifications', spec_set=True)
+    @patch('crowdpact.apps.pact.models.create_notifications_for_users', spec_set=True)
+    def test_pledge_creation_does_not_trigger_pact_success_when_goal_already_met(
+            self, create_notifications_for_users, send_notifications):
         """
         Verify that when if we create a last pledge the Pact success case is not triggered if we
         haven't yet met our goal.
@@ -99,10 +108,13 @@ class PactTests(TestCase):
         # Run code and verify expectations
         self.assertEqual(2, pact.pledge_count)
         self.assertEquals(0, Event.objects.count())
-        self.assertFalse(notify_users.called)
+        self.assertFalse(create_notifications_for_users.called)
+        self.assertFalse(send_notifications.called)
 
-    @patch.object(Event, 'notify_users', spec_set=True)
-    def test_pledge_creation_does_not_trigger_pact_success_after_deadline(self, notify_users):
+    @patch('crowdpact.apps.pact.models.send_notifications', spec_set=True)
+    @patch('crowdpact.apps.pact.models.create_notifications_for_users', spec_set=True)
+    def test_pledge_creation_does_not_trigger_pact_success_after_deadline(
+            self, create_notifications_for_users, send_notifications):
         """
         Verify that when if we create a last pledge the Pact success case is not triggered if we
         haven't yet met our goal.
@@ -119,7 +131,8 @@ class PactTests(TestCase):
         # Run code and verify expectations
         self.assertEqual(2, pact.pledge_count)
         self.assertEquals(0, Event.objects.count())
-        self.assertFalse(notify_users.called)
+        self.assertFalse(create_notifications_for_users.called)
+        self.assertFalse(send_notifications.called)
 
 
 class PactTransactionTests(TransactionTestCase):

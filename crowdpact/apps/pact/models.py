@@ -4,6 +4,7 @@ from django.db import IntegrityError, models, transaction
 from pytz import utc as utc_tz
 
 from crowdpact.apps.event.models import Event
+from crowdpact.apps.event.processing import create_notifications_for_users, send_notifications
 
 
 class PactManager(models.Manager):
@@ -83,9 +84,12 @@ class Pact(models.Model):
             'pact': self.id,
             'met_goal': True,
         })
-        evt.notify_users(self.pledge_set.all())
 
+        create_notifications_for_users(self.pledge_set.all(), evt)
         self._set_notification_events_created()
+
+        # NOTE: the below should eventually be in a periodic task
+        send_notifications()
 
     def __unicode__(self):
         return u'{0} - {1} - {2}'.format(self.name, self.goal, self.deadline)

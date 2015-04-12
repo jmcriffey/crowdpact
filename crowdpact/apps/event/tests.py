@@ -4,8 +4,9 @@ from mock import patch
 
 from crowdpact.apps.account.models import Account
 from crowdpact.apps.event.models import (
-    EmailNotification, Event, SiteNotification, create_notifications_for_users, send_notifications
+    EmailNotification, Event, SiteNotification
 )
+from crowdpact.apps.event.processing import create_notifications_for_users, send_notifications
 
 
 class EventTests(TestCase):
@@ -37,17 +38,3 @@ class EventTests(TestCase):
 
         # Verify expectations
         self.assertEquals(1, send.call_count)
-
-    @patch('crowdpact.apps.event.models.send_notifications', spec_set=True)
-    @patch('crowdpact.apps.event.models.create_notifications_for_users', spec_set=True)
-    def test_notify_users(self, create_nofications_for_users, send_notifications):
-        # Setup scenario
-        act = G(Account)
-        evt = G(Event, context={})
-
-        # Run code
-        evt.notify_users([act])
-
-        # Verify expectations
-        create_nofications_for_users.assert_called_with([act], evt)
-        self.assertTrue(send_notifications.called)

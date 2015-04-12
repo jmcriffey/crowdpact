@@ -57,45 +57,9 @@ class EmailNotification(Notification):
         return self._render_template('{0}_email.html'.format(self.event.name))
 
 
-def create_notifications_for_users(accounts, event):
-    """
-    Create any applicable notifications for the provided accounts and events.
-    """
-    # Create SiteNotifications for all users
-    SiteNotification.objects.bulk_create([
-        SiteNotification(account=act, event=event)
-        for act in accounts
-    ])
-
-    # Create EmailNotifications for all users
-    # TODO: add an ability to disable this for each user
-    EmailNotification.objects.bulk_create([
-        EmailNotification(account=act, event=event)
-        for act in accounts
-    ])
-
-
-def send_notifications():
-    """
-    Send any unsent notifications.
-    """
-    # Send any email related tasks
-    for note in EmailNotification.objects.select_related('event', 'account').filter(sent=False):
-        note.send()
-
-
 class Event(models.Model):
     """
     This model is used for tracking events that may be of interest to users.
     """
     name = models.TextField()
     context = JSONField()
-
-    def notify_users(self, users):
-        """
-        Create Notification events for all of the provided users and send them.
-        """
-        create_notifications_for_users(users, self)
-
-        # NOTE: the below should eventually be in a periodic task
-        send_notifications()
