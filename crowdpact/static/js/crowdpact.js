@@ -1,16 +1,18 @@
+import {fromJS} from 'immutable';
 import React from 'react';
+import 'whatwg-fetch';
 
-import AccountSignupApp from './apps/account/components/AccountSignupApp';
+import LandingApp from './apps/landing/components/LandingApp';
 
 
 const APPS = {
-    AccountSignupApp
+    LandingApp
 };
 
 global.CrowdPact = {
-    render(appName, mountNode) {
+    render(appName, pageData, mountNode) {
         const Component = APPS[appName]; //eslint-disable-line
 
-        React.render(<Component />, mountNode); //eslint-disable-line
+        React.render(<Component pageData={fromJS(pageData)} />, mountNode); //eslint-disable-line
     }
 };

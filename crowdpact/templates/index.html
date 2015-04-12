@@ -1,17 +1,29 @@
 <!doctype html> {% load staticfiles %}
 <html>
     <head>
-        <title>CrowdPact | {{ title }}</title>
+        <meta charset="utf-8" />
+
+        <title>{{ title }}</title>
+
+        <link href="{% static 'crowdpact.css' %}" rel="stylesheet" />
     </head>
     <body>
+        <input id="csrftoken" type="hidden" value="{{ csrf_token }}" />
+        <input id="pagedata" type="hidden" value="{{ page_data }}" />
         <div id="crowdpact"></div>
 
         <script src="{% static 'crowdpact.js' %}"></script>
 
         <script>
-            var mountNode = document.getElementById('crowdpact');
+            var pageData = JSON.parse(document.getElementById('pagedata').value);
 
-            CrowdPact.render('{{ app }}', mountNode);
+            pageData.csrf_token = document.getElementById('csrftoken').value;
+
+            CrowdPact.render(
+                '{{ app }}',
+                pageData,
+                document.getElementById('crowdpact')
+            );
         </script>
     </body>
 </html>

@@ -4,11 +4,14 @@
   "description": "The frontend for crowdpact.",
   "main": "index.js",
   "scripts": {
-    "build": "mkdir -p build && browserify js/crowdpact.js -o build/crowdpact.js && uglifyjs build/crowdpact.js -o build/crowdpact.min.js",
+    "browserify": "browserify js/crowdpact.js -o build/crowdpact.js",
+    "build": "mkdir -p build && npm run browserify && npm run uglify && npm run stylus",
     "check_coverage": "babel-istanbul check-coverage .coverage/coverage.json",
     "cover": "babel-node node_modules/.bin/babel-istanbul cover _mocha -- --recursive js",
     "lint": "eslint js",
-    "test": "npm run lint && npm run cover && npm run check_coverage"
+    "stylus": "stylus style/crowdpact.styl --out build/crowdpact.css --compress --use nib",
+    "test": "npm run lint && npm run cover && npm run check_coverage",
+    "uglify": "uglifyjs build/crowdpact.js -o build/crowdpact.min.js"
   },
   "repository": {
     "type": "git",
@@ -22,8 +25,11 @@
   "homepage": "https://github.com/joshmarlow/crowdpact",
   "dependencies": {
     "babel-runtime": "^5.0.12",
+    "immutable": "^3.7.2",
+    "lodash": "^3.6.0",
     "react": "^0.13.1",
-    "reflux": "^0.2.7"
+    "reflux": "^0.2.7",
+    "whatwg-fetch": "^0.7.0"
   },
   "devDependencies": {
     "babel": "^5.0.12",
@@ -32,16 +38,22 @@
     "browserify": "^9.0.8",
     "eslint": "^0.18.0",
     "mocha": "^2.2.4",
+    "nib": "^1.1.0",
+    "stylus": "^0.50.0",
     "uglify-js": "^2.4.19"
   },
   "browserify": {
     "require": [
+      "immutable",
       "react",
-      "reflux"
+      "reflux",
+      "whatwg-fetch"
     ],
     "noparse": [
+      "immutable",
       "react",
-      "reflux"
+      "reflux",
+      "whatwg-fetch"
     ],
     "transform": [
       [

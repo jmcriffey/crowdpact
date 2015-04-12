@@ -1,0 +1,18 @@
+base-button(color) {
+    background-color: color;
+    border: none;
+    border-bottom: 2px solid darken(color, 20%);
+    border-radius: 3px;
+    color: #fff;
+    cursor: pointer;
+    box-sizing: border-box;
+    height: 32px;
+
+    &:hover {
+        background-color: darken(color, 10%);
+        border-color: darken(color, 10%);
+        border-bottom-color: darken(color, 40%)
+    }
+}
+
+

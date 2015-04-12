@@ -48,8 +48,9 @@ INSTALLED_APPS = (
     'django_extensions',
     'crowdpact.apps.account',
     'crowdpact.apps.event',
+    'crowdpact.apps.landing',
     'crowdpact.apps.pact',
-    'crowdpact.apps.pact.tests',
+    'crowdpact.apps.pact.tests'
 )
 
 MIDDLEWARE_CLASSES = (
