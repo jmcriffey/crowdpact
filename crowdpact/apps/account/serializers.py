@@ -15,6 +15,9 @@ class AccountSerializer(serializers.ModelSerializer):
     pledges = serializers.SerializerMethodField()
 
     def get_created_pacts(self, obj):
+        """
+        List all of the Pacts this user has created.
+        """
         from crowdpact.apps.pact.models import Pact
         from crowdpact.apps.pact.serializers import PactSerializer
 
@@ -23,6 +26,9 @@ class AccountSerializer(serializers.ModelSerializer):
         ]
 
     def get_pledges(self, obj):
+        """
+        List all of the Pledges this user has made to live Pacts.
+        """
         from crowdpact.apps.pact.models import Pact
         from crowdpact.apps.pact.serializers import PactSerializer
 
