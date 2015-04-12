@@ -134,6 +134,72 @@ class PactTests(TestCase):
         self.assertFalse(create_notifications_for_users.called)
         self.assertFalse(send_notifications.called)
 
+    def test_search_for_one_term(self):
+        # Setup scenario
+        p1 = G(Pact, name='Vote for (Rand|Ron) Paul!')
+        p2 = G(Pact, name='Vote for Ralph Nadir!')
+
+        # Run code
+        pacts = Pact.objects.search('vote', tokenize=True)
+
+        # Verify expectations
+        self.assertEquals(set([p1, p2]), set(pacts))
+
+    def test_search_handles_no_results(self):
+        # Setup scenario
+        G(Pact, name='Vote for (Rand|Ron) Paul!')
+        G(Pact, name='Vote for Ralph Nadir!')
+
+        # Run code
+        pacts = Pact.objects.search('Overthrow the proletariat!', tokenize=False)
+
+        # Verify expectations
+        self.assertEquals(set(), set(pacts))
+
+    def test_search_for_tokenized_input_checks_names(self):
+        # Setup scenario
+        p1 = G(Pact, name='Vote for (Rand|Ron) Paul!')
+        p2 = G(Pact, name='Vote for Ralph Nadir!')
+
+        # Run code
+        pacts = Pact.objects.search('ralph paul', tokenize=True)
+
+        # Verify expectations
+        self.assertEquals(set([p1, p2]), set(pacts))
+
+    def test_search_for_non_tokenized_input_checks_names(self):
+        # Setup scenario
+        G(Pact, name='Vote for (Rand|Ron) Paul!')
+        p1 = G(Pact, name='Vote for Ralph Nadir!')
+
+        # Run code
+        pacts = Pact.objects.search('Vote for Ralph', tokenize=False)
+
+        # Verify expectations
+        self.assertEquals([p1], pacts)
+
+    def test_search_for_tokenized_input_checks_descriptions(self):
+        # Setup scenario
+        p1 = G(Pact, description='Vote for (Rand|Ron) Paul!')
+        p2 = G(Pact, description='Vote for Ralph Nadir!')
+
+        # Run code
+        pacts = Pact.objects.search('ralph paul', tokenize=True)
+
+        # Verify expectations
+        self.assertEquals(set([p1, p2]), set(pacts))
+
+    def test_search_for_non_tokenized_input_checks_descriptions(self):
+        # Setup scenario
+        G(Pact, description='Vote for (Rand|Ron) Paul!')
+        p1 = G(Pact, description='Vote for Ralph Nadir!')
+
+        # Run code
+        pacts = Pact.objects.search('Vote for Ralph', tokenize=False)
+
+        # Verify expectations
+        self.assertEquals([p1], pacts)
+
 
 class PactTransactionTests(TransactionTestCase):
     def test_no_double_pledge(self):
