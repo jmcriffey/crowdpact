@@ -9,11 +9,14 @@ class CrowdPactContextMixin(ContextMixin):
     def get_context_data(self):
         context = super(CrowdPactContextMixin, self).get_context_data()
 
-        context['title'] = self.title
+        context['title'] = self.get_title()
         context['app'] = self.app
         context['page_data'] = json.dumps(self.get_page_data())
 
         return context
+
+    def get_title(self):
+        return self.title
 
     def get_page_data(self):
         return {}
@@ -27,7 +30,7 @@ class CrowdPactContextMixin(ContextMixin):
 class CrowdPactTemplateView(CrowdPactContextMixin, TemplateView):
     app = 'LandingApp'
     template_name = 'index.html'
-    title = 'Welcome'
+    title = 'Welcome to CrowdPact'
 
 
 class CrowdPactView(CrowdPactContextMixin, View):
