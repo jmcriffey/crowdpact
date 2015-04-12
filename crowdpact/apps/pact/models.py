@@ -20,6 +20,34 @@ class PactManager(models.Manager):
         """
         return self.filter(creator=user)
 
+    def search(self, search_string, tokenize=False):
+        """
+        Provides an interface for searching for Pacts.
+        """
+        if tokenize:
+            return self._search_for_terms(self._tokenize(search_string))
+        else:
+            return self._search_for_terms([search_string])
+
+    def _tokenize(self, s):
+        """
+        Split a string along whitespace boundaries and strip surrounding whitespace.
+        """
+        return [w.strip() for w in s.split(' ')]
+
+    def _search_for_terms(self, search_terms):
+        """
+        Search for any Pact's that contain the provided search terms.
+        """
+        matching_pacts = []
+
+        for term in search_terms:
+            pacts = list(Pact.objects.filter(models.Q(name__icontains=term) | models.Q(description__icontains=term)))
+            if pacts:
+                matching_pacts += pacts
+
+        return matching_pacts
+
 
 class Pact(models.Model):
     """
