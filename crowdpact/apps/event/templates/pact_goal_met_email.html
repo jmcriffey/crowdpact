@@ -1,0 +1,13 @@
+<html>
+<h2>
+{{ subject }}
+</h2>
+
+<br />
+
+{% if met_goal %}
+    Pact {{ pact }} has succeeded!
+{% else %}
+    Pact {{ pact }} has failed.
+{% endif %}
+</html>

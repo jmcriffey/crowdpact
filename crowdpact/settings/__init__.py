@@ -47,6 +47,7 @@ INSTALLED_APPS = (
     'django_dynamic_fixture',
     'django_extensions',
     'crowdpact.apps.account',
+    'crowdpact.apps.event',
     'crowdpact.apps.pact',
     'crowdpact.apps.pact.tests',
 )
@@ -92,7 +93,7 @@ TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
-USE_L10N = True
+USE_L10N = False
 
 USE_TZ = True
 
@@ -110,3 +111,10 @@ execfile(os.path.join(os.path.dirname(__file__), 'database.py'))
 
 # Custom user model
 AUTH_USER_MODEL = 'account.Account'
+
+# Email stuff
+EMAIL_USE_TLS = True
+EMAIL_HOST = os.environ['EMAIL_HOST']
+EMAIL_HOST_USER = os.environ['EMAIL_HOST_USER']
+EMAIL_HOST_PASSWORD = os.environ['EMAIL_HOST_PASSWORD']
+EMAIL_PORT = 587
