@@ -46,6 +46,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django_extensions',
     'crowdpact.apps.account',
+    'crowdpact.apps.landing',
     'crowdpact.apps.pact'
 )
 

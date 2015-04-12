@@ -1,0 +1,52 @@
+.landing-header {
+    clearfix();
+
+    background: color-background;
+    height: 70px;
+    width: 100%;
+
+    .landing-title {
+        float: left;
+        font-size: 24px;
+        height: 70px;
+        line-height: 70px;
+
+        a {
+            color: color-font;
+            text-decoration: none;
+
+            &:hover {
+                color: color-blue;
+            }
+        }
+    }
+
+    .landing-search {
+        float: left;
+        height: 70px;
+        line-height: 70px;
+        margin-left: 20px;
+
+        input {
+            border: 1px solid color-light-gray;
+            width: 360px;
+        }
+    }
+
+    .landing-buttons {
+        float: right;
+        height: 70px;
+        line-height: 70px;
+
+        input {
+            margin-right: 10px;
+        }
+
+        button {
+            base-button(color-blue);
+
+            margin-right: 10px;
+            width: 80px;
+        }
+    }
+}

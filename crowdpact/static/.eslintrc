@@ -25,7 +25,7 @@
     "no-var": 2,
     "no-warning-comments": [1, {"terms": ["todo", "fixme"], "location": "anywhere"}],
     "padded-blocks": [2, "never"],
-    "quotes": "single",
+    "quotes": [2, "single"],
     "radix": 2,
     "space-after-keywords": [2, "always"],
     "space-before-blocks": [2, "always"],

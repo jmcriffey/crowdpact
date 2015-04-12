@@ -10,6 +10,8 @@ dev_defaults = {
     'HOST': 'localhost',
 }
 
+print dj_database_url.config()
+
 DATABASES = {
     'default': dj_database_url.config() or dev_defaults
 }

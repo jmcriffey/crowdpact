@@ -1,15 +1,18 @@
-from django.views.generic import TemplateView
+from django.contrib.auth import authenticate
+
+from crowdpact.views import CrowdPactView
 
 
-class AccountSignupView(TemplateView):
-    app = 'AccountSignupApp'
-    template_name = 'index.html'
-    title = 'Signup'
+class AccountLoginView(CrowdPactView):
+    http_method_names = ['post']
 
-    def get_context_data(self):
-        context = super(AccountSignupView, self).get_context_data()
+    def post(self, request, *args, **kwargs):
+        account = authenticate(
+            username=request.POST.get('username'),
+            password=request.POST.get('password')
+        )
 
-        context['title'] = self.title
-        context['app'] = self.app
-
-        return context
+        if account:
+            return self.get_json_response({'message': 'You logged in.'})
+        else:
+            return self.get_json_response({'message': 'Bad username or password.'})
