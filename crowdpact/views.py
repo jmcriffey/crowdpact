@@ -16,9 +16,7 @@ class CrowdPactContextMixin(ContextMixin):
         return context
 
     def get_page_data(self):
-        return {
-            'csrf_token': self.request.META['CSRF_COOKIE']
-        }
+        return {}
 
     def get_json_response(self, response=None, status=200):
         response = response or {}

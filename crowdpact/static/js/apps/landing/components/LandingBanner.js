@@ -36,10 +36,14 @@ class LandingBanner extends React.Component {
         return (
             <div className="landing-signup">
                 <form className="landing-signup-form" ref="signupForm">
-                    <input placeholder="Pick a username" name="name" ref="name" type="text" />
-                    <input placeholder="Your email" ref="email" type="text" />
-                    <input placeholder="Create a password" ref="password1" type="password" />
-                    <input placeholder="Re-enter password" ref="password2" type="password" />
+                    <input
+                    name="csrfmiddlewaretoken"
+                    type="hidden"
+                    value={this.props.pageData.get('csrf_token')} />
+
+                    <input placeholder="Pick a username" name="username" ref="username" type="text" />
+                    <input placeholder="Your email" name="email" ref="email" type="text" />
+                    <input placeholder="Create a password" name="password" ref="password" type="password" />
 
                     <button onClick={this.onSignup} type="button">Signup for CrowdPact</button>
                 </form>
@@ -48,7 +52,12 @@ class LandingBanner extends React.Component {
     }
 
     onSignup() {
-        console.log('onSignup');
+        fetch(this.props.pageData.get('signup_url'), {
+            body: new FormData(React.findDOMNode(this.refs.signupForm)),
+            method: 'POST'
+        })
+        .then(res => res.json())
+        .then(data => console.log(data));
     }
 }
 

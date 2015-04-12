@@ -9,6 +9,7 @@ class LandingView(CrowdPactTemplateView):
     def get_page_data(self):
         page_data = super(LandingView, self).get_page_data()
         page_data['login_url'] = reverse('account.login')
+        page_data['signup_url'] = reverse('account.signup')
         page_data['landing_text_large'] = 'Welcome to CrowdPact.'
         page_data['landing_text_small'] = 'It\'s where crowds make pacts.'
         page_data['pacts'] = [{
