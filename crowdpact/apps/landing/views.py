@@ -1,7 +1,7 @@
 from django.core.urlresolvers import reverse
 from django.shortcuts import redirect
 
-# from crowdpact.apps.pact import models as pact_models
+from crowdpact.apps.pact import models as pact_models, serializers as pact_serializers
 from crowdpact.views import CrowdPactTemplateView
 
 
@@ -26,13 +26,13 @@ class LandingView(CrowdPactTemplateView):
         page_data['landing_text_small'] = 'It\'s where crowds make pacts.'
         page_data['pacts'] = [{
             'title': 'Most Popular',
-            'items': []  # list(pact_models.Pact.objects.get_most_popular())
+            'items': pact_serializers.PactSerializer(pact_models.Pact.objects.all().most_popular, many=True).data
         }, {
             'title': 'Newest',
-            'items': []  # list(pact_models.Pact.objects.get_newest())
+            'items': pact_serializers.PactSerializer(pact_models.Pact.objects.all().newest, many=True).data
         }, {
             'title': 'Ending Soon',
-            'items': []  # list(pact_models.Pact.objects.get_ending_soon())
+            'items': pact_serializers.PactSerializer(pact_models.Pact.objects.all().ending_soon, many=True).data
         }]
 
         return page_data
