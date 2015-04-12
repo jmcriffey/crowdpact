@@ -37,7 +37,7 @@ class PactManager(models.Manager):
         """
         Return all Pacts ordered by time deadline.
         """
-        return Pact.objects.filter(deadline__gt=utc_tz.localize(datetime.utcnow)).order_by('deadline')
+        return Pact.objects.filter(deadline__gt=utc_tz.localize(datetime.utcnow())).order_by('deadline')
 
     def search(self, search_string, tokenize=False):
         """

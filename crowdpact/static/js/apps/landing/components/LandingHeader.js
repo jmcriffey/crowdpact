@@ -1,6 +1,7 @@
+import debounce from 'lodash/function/debounce';
 import React from 'react';
 
-import debounce from 'lodash/function/debounce';
+import LandingActions from '../actions/LandingActions';
 
 
 class LandingHeader extends React.Component {
@@ -22,19 +23,23 @@ class LandingHeader extends React.Component {
                         <input onChange={this.onSearch} placeholder="Find pacts" type="text" />
                     </div>
                     <div className="landing-buttons">
-                        <button onClick={this.onClickLogin} type="button">Login</button>
+                        <button onClick={this.onClickLogin}>{this.getButtonText()}</button>
                     </div>
                 </div>
             </div>
         );
     }
 
-    onClickLogin() {
-        console.log('onClickLogin');
-    }
-
     onSearch() {
         console.log('onSearch');
+    }
+
+    onClickLogin() {
+        LandingActions.toggleShowLogin()
+    }
+
+    getButtonText() {
+        return this.props.data.get('showLogin') ? 'Signup' : 'Login';
     }
 }
 

@@ -3,10 +3,13 @@ import React from 'react';
 
 class PactHomeApp extends React.Component {
     render() {
-        console.log(this.props.pageData.get('user'));
-
         return (
-            <h1>Welcome Home!</h1>
+            <div>
+                <h1>
+                    Welcome to CrowdPact {this.props.pageData.get('user').get('username')}!
+                </h1>
+                <a href={this.props.pageData.get('logout_url')}>Logout</a>
+            </div>
         );
     }
 }

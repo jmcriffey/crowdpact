@@ -1,6 +1,8 @@
-from django.contrib.auth import authenticate, login, get_user_model
+from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.core.exceptions import ValidationError
+from django.core.urlresolvers import reverse
 from django.core.validators import validate_email
+from django.shortcuts import redirect
 
 from crowdpact.views import CrowdPactView
 
@@ -10,16 +12,25 @@ class AccountLoginView(CrowdPactView):
 
     def post(self, request, *args, **kwargs):
         account = authenticate(
-            username=request.POST.get('username'),
+            username=request.POST.get('username', '').lower(),
             password=request.POST.get('password')
         )
 
-        if account:  # TODO redirect the user.
+        if account:
             login(request, account)
 
-            return self.get_json_response({'message': 'Welcome to CrowdPact!'})
+            return self.get_json_response({'next': reverse('pact.index')})
 
         return self.get_json_response({'message': 'Bad username or password.'})
+
+
+class AccountLogoutView(CrowdPactView):
+    http_method_names = ['get']
+
+    def get(self, request, *args, **kwargs):
+        logout(request)
+
+        return redirect('landing.index')
 
 
 class AccountSignupView(CrowdPactView):
@@ -36,15 +47,17 @@ class AccountSignupView(CrowdPactView):
             return self.get_json_response({'message': str(err[0])})
 
         get_user_model().objects.create_user(email=email, username=username, password=password)
-
         account = authenticate(
             username=request.POST.get('username'),
             password=request.POST.get('password')
         )
-        login(request, account)
 
-        # TODO: redirect the user
-        return self.get_json_response({'message': 'Welcome to CrowPact!'})
+        if account:
+            login(request, account)
+
+            return self.get_json_response({'next': reverse('pact.index')})
+
+        return self.get_json_response({'message': 'There was an error signing up.'})
 
     def validate_user(self, username, email, password):
         if len(password) < 7:

@@ -15,14 +15,14 @@
         <script src="{% static 'crowdpact.js' %}"></script>
 
         <script>
-            var app = '{{ app }}';
+            var appName = '{{ react_app }}';
             var pageData = JSON.parse(document.getElementById('pagedata').value);
             var mountNode = document.getElementById('crowdpact');
 
             pageData.csrf_token = document.getElementById('csrftoken').value;
 
-            if (app) {
-                CrowdPact.render(app, pageData, mountNode);
+            if (appName) {
+                CrowdPact.render(appName, pageData, mountNode);
             }
         </script>
     </body>

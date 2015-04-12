@@ -1,10 +1,11 @@
+from django.core.urlresolvers import reverse
 from django.shortcuts import redirect
 
 from crowdpact.views import CrowdPactTemplateView
 
 
 class PactHomeView(CrowdPactTemplateView):
-    app = 'PactHomeApp'
+    react_app = 'PactHomeApp'
     title = 'CrowdPact'
 
     def get(self, request, *args, **kwargs):
@@ -22,5 +23,6 @@ class PactHomeView(CrowdPactTemplateView):
             'email': self.request.user.email,
             'username': self.request.user.username
         }
+        page_data['logout_url'] = reverse('account.logout')
 
         return page_data
