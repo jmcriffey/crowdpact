@@ -6,7 +6,6 @@ from crowdpact.apps.account.models import Account
 from crowdpact.apps.account.serializers import AccountSerializer
 
 
-# ############### Abstract API views ################
 class AccountDetailsView(mixins.RetrieveModelMixin, generics.GenericAPIView):
     queryset = Account.objects.all()
     serializer_class = AccountSerializer
