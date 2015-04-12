@@ -21,6 +21,9 @@ class PactManager(models.Manager):
         return self.filter(creator=user)
 
     def search(self, search_string, tokenize=False):
+        """
+        Provides an interface for searching for Pacts.
+        """
         if tokenize:
             return self._search_for_terms(self._tokenize(search_string))
         else:
