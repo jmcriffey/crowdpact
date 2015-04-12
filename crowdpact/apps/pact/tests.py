@@ -200,6 +200,29 @@ class PactTests(TestCase):
         # Verify expectations
         self.assertEquals([p1], pacts)
 
+    def test_most_popular(self):
+        # Setup scenario
+        a1 = G(Account)
+        a2 = G(Account)
+
+        # p1 will have 3 pledges
+        p1 = G(Pact)
+        # p2 will have 2 pledges
+        p2 = G(Pact)
+        # p2 will have 1 pledge
+        p3 = G(Pact)
+
+        p1.make_pledge(a1)
+        p1.make_pledge(a2)
+
+        p2.make_pledge(a1)
+
+        # Run code
+        most_popular = Pact.objects.get_most_popular()
+
+        # Verify expectations
+        self.assertEquals([p1, p2, p3], list(most_popular))
+
 
 class PactTransactionTests(TransactionTestCase):
     def test_no_double_pledge(self):
@@ -212,8 +235,8 @@ class PactTransactionTests(TransactionTestCase):
         pact = G(Pact, creator=G(Account), goal=10)
 
         # Run code
-        p1 = pact.pledge(other_account)
-        p2 = pact.pledge(other_account)
+        p1 = pact.make_pledge(other_account)
+        p2 = pact.make_pledge(other_account)
 
         # Verify expectations
         self.assertTrue(type(p1) is Pledge)
