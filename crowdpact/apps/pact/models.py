@@ -38,7 +38,7 @@ class PactQuerySet(models.QuerySet):
         """
         return self.filter(deadline__gt=utc_tz.localize(datetime.utcnow())).order_by('deadline')
 
-    def pledged_for_user(self, user):
+    def pledged_by_user(self, user):
         """
         Return all of the Pacts pledged by this user (including the ones they created).
         """
