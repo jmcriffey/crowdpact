@@ -1,4 +1,10 @@
+from datetime import datetime
+
 from django.db import IntegrityError, models, transaction
+from pytz import utc as utc_tz
+
+from crowdpact.apps.event.models import Event
+from crowdpact.apps.event.processing import create_notifications_for_users, send_notifications
 
 
 class PactManager(models.Manager):
@@ -25,7 +31,18 @@ class Pact(models.Model):
     goal = models.IntegerField()
     deadline = models.DateTimeField()
 
+    # State variables for handling the endgame
+    goal_met = models.BooleanField(default=False)
+    notification_events_created = models.BooleanField(default=False)
+
     objects = PactManager()
+
+    @property
+    def has_enough_pledges(self):
+        """
+        Does this Pact have enough pledges?
+        """
+        return self.pledge_count >= self.goal
 
     @property
     def pledge_count(self):
@@ -33,6 +50,13 @@ class Pact(models.Model):
         Return the number of pledges for this Pact.
         """
         return self.pledge_set.count()
+
+    @property
+    def is_ongoing(self):
+        """
+        Return if the pledge is still ongoing (ie, we've not hit the deadline).
+        """
+        return utc_tz.localize(datetime.utcnow()) < self.deadline
 
     def pledge(self, user):
         """
@@ -44,8 +68,40 @@ class Pact(models.Model):
             transaction.rollback()
             return None
 
+    def set_goal_suceeded(self):
+        """
+        Handle the case where the Pact's goal was met.
+        """
+        self._set_goal_met()
+        self._create_success_event()
+
+    def _create_success_event(self):
+        """
+        Create the 'Success' event for all pledges.
+        """
+        evt = Event.objects.create(name='pact_goal_met', context={
+            'subject': 'Pact Succeeded!',
+            'pact': self.id,
+            'met_goal': True,
+        })
+
+        create_notifications_for_users(self.pledge_set.all(), evt)
+        self._set_notification_events_created()
+
+        # NOTE: the below should eventually be in a periodic task
+        send_notifications()
+
     def __unicode__(self):
         return u'{0} - {1} - {2}'.format(self.name, self.goal, self.deadline)
+
+    # Save methods
+    def _set_goal_met(self):
+        self.goal_met = True
+        self.save(update_fields=['goal_met'])
+
+    def _set_notification_events_created(self):
+        self.notification_events_created = True
+        self.save(update_fields=['notification_events_created'])
 
     def save(self, *args, **kwargs):
         this_is_initial_save = not bool(getattr(self, 'id', None))
@@ -69,3 +125,10 @@ class Pledge(models.Model):
 
     def __unicode__(self):
         return u'{0} {1}'.format(self.account.username, self.pact.name)
+
+    def save(self, *args, **kwargs):
+        super(Pledge, self).save(*args, **kwargs)
+
+        if self.pact.has_enough_pledges and self.pact.is_ongoing:
+            if not self.pact.goal_met:
+                self.pact.set_goal_suceeded()
