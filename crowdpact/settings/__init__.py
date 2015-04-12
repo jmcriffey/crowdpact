@@ -46,6 +46,8 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django_dynamic_fixture',
     'django_extensions',
+    'rest_framework',
+    'rest_framework.authtoken',
     'crowdpact.apps.account',
     'crowdpact.apps.event',
     'crowdpact.apps.landing',

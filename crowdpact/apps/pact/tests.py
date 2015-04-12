@@ -65,8 +65,8 @@ class PactTests(TestCase):
             'met_goal': True,
         }, Event.objects.get(name='pact_goal_met').context)
         self.assertEquals(
-            set(pact.pledge_set.values_list('pk')),
-            set(create_notifications_for_users.call_args_list[0][0][0].values_list('pk')))
+            set([p.account for p in pact.pledge_set.all()]),
+            set(create_notifications_for_users.call_args_list[0][0][0]))
         self.assertEquals(1, send_notifications.call_count)
 
     @patch('crowdpact.apps.pact.models.send_notifications', spec_set=True)
@@ -206,11 +206,11 @@ class PactTests(TestCase):
         a2 = G(Account)
 
         # p1 will have 3 pledges
-        p1 = G(Pact)
+        p1 = G(Pact, deadline=utc_tz.localize(datetime(2015, 4, 20)))
         # p2 will have 2 pledges
-        p2 = G(Pact)
+        p2 = G(Pact, deadline=utc_tz.localize(datetime(2015, 4, 20)))
         # p2 will have 1 pledge
-        p3 = G(Pact)
+        p3 = G(Pact, deadline=utc_tz.localize(datetime(2015, 4, 20)))
 
         p1.make_pledge(a1)
         p1.make_pledge(a2)
@@ -218,10 +218,23 @@ class PactTests(TestCase):
         p2.make_pledge(a1)
 
         # Run code
-        most_popular = Pact.objects.get_most_popular()
+        with freeze_time(datetime(2015, 4, 10)):
+            most_popular = Pact.objects.live_pacts.most_popular
 
-        # Verify expectations
-        self.assertEquals([p1, p2, p3], list(most_popular))
+            # Verify expectations
+            self.assertEquals([p1, p2, p3], list(most_popular))
+
+    def test_live_pacts_returned(self):
+        """
+        Verify Pact.live_pacts only returns active pacts.
+        """
+        # Setup scenario
+        live = G(Pact, deadline=utc_tz.localize(datetime(2015, 4, 20)))
+        G(Pact, deadline=utc_tz.localize(datetime(2015, 1, 1)))
+
+        # Run code and verify expectations
+        with freeze_time(datetime(2015, 4, 10)):
+            self.assertEquals([live], list(Pact.objects.live_pacts))
 
 
 class PactTransactionTests(TransactionTestCase):

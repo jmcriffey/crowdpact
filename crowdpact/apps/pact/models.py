@@ -8,7 +8,36 @@ from crowdpact.apps.event.models import Event
 from crowdpact.apps.event.processing import create_notifications_for_users, send_notifications
 
 
-class PactManager(models.Manager):
+class PactQuerySet(models.QuerySet):
+    @property
+    def live_pacts(self):
+        """
+        Return all 'live' pacts, ie ones that have not yet hit their deadlines.
+        """
+        return self.filter(deadline__gt=utc_tz.localize(datetime.utcnow()))
+
+    @property
+    def most_popular(self):
+        """
+        Return the most popular Pacts by pledge count.
+        """
+        return self.annotate(
+            pledge_count_annotation=Count('pledge')).order_by('-pledge_count_annotation')
+
+    @property
+    def newest(self):
+        """
+        Return all packs ordered by newness.
+        """
+        return self.order_by('-creation_time')
+
+    @property
+    def ending_soon(self):
+        """
+        Return all Pacts ordered by time deadline.
+        """
+        return self.filter(deadline__gt=utc_tz.localize(datetime.utcnow())).order_by('deadline')
+
     def pledged_for_user(self, user):
         """
         Return all of the Pacts pledged by this user (including the ones they created).
@@ -21,23 +50,14 @@ class PactManager(models.Manager):
         """
         return self.filter(creator=user)
 
-    def get_most_popular(self):
-        """
-        Return the most popular Pacts by pledge count.
-        """
-        return Pact.objects.annotate(pledge_count_annotation=Count('pledge')).order_by('-pledge_count_annotation')
 
-    def get_newest(self):
-        """
-        Return all packs ordered by newness.
-        """
-        return Pact.objects.order_by('-creation_time')
+class PactManager(models.Manager):
+    def get_queryset(self):
+        return PactQuerySet(self.model, using=self._db)
 
-    def get_ending_soon(self):
-        """
-        Return all Pacts ordered by time deadline.
-        """
-        return Pact.objects.filter(deadline__gt=utc_tz.localize(datetime.utcnow())).order_by('deadline')
+    @property
+    def live_pacts(self):
+        return self.get_queryset().live_pacts
 
     def search(self, search_string, tokenize=False):
         """
@@ -61,7 +81,8 @@ class PactManager(models.Manager):
         matching_pacts = []
 
         for term in search_terms:
-            pacts = list(Pact.objects.filter(models.Q(name__icontains=term) | models.Q(description__icontains=term)))
+            pacts = list(self.filter(
+                models.Q(name__icontains=term) | models.Q(description__icontains=term)))
             if pacts:
                 matching_pacts += pacts
 
@@ -133,7 +154,8 @@ class Pact(models.Model):
             'met_goal': True,
         })
 
-        create_notifications_for_users(self.pledge_set.all(), evt)
+        pledged_accounts = [pledge.account for pledge in self.pledge_set.select_related('account').all()]
+        create_notifications_for_users(pledged_accounts, evt)
         self._set_notification_events_created()
 
         # NOTE: the below should eventually be in a periodic task
