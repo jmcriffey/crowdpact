@@ -1,6 +1,8 @@
 from django.conf.urls import url
 
-from crowdpact.apps.pact.api import EndingSoonPactList, MostPopularPactList, NewestPactList, PactDetailsView
+from crowdpact.apps.pact.api import (
+    EndingSoonPactList, MakePledgeView, MostPopularPactList, NewestPactList, PactDetailsView
+)
 from crowdpact.apps.pact.views import PactHomeView
 
 
@@ -10,4 +12,5 @@ urlpatterns = [
     url(r'^api/most-popular/?$', MostPopularPactList.as_view(), name='pact.api.most_popular'),
     url(r'^api/newest/?$', NewestPactList.as_view(), name='pact.api.newest'),
     url(r'^api/ending-soon/?$', EndingSoonPactList.as_view(), name='pact.api.ending_soon'),
+    url(r'^api/make-pledge?$', MakePledgeView.as_view(), name='pact.api.make_pledge'),
 ]

@@ -1,10 +1,13 @@
 from datetime import datetime
 
+from django.core.urlresolvers import reverse
 from django.test import TestCase, TransactionTestCase
 from django_dynamic_fixture import G
 from freezegun import freeze_time
 from mock import patch
 from pytz import utc as utc_tz
+from rest_framework import status
+from rest_framework.test import APITestCase
 
 from crowdpact.apps.account.models import Account
 from crowdpact.apps.event.models import Event
@@ -235,6 +238,29 @@ class PactTests(TestCase):
         # Run code and verify expectations
         with freeze_time(datetime(2015, 4, 10)):
             self.assertEquals([live], list(Pact.objects.live_pacts))
+
+
+class PactAPITests(APITestCase):
+    def test_make_pledge(self):
+        # Setup scenario
+        username = 'tester'
+        password = 'secret'
+        creator = G(Account)
+        user = Account.objects.create_user(username=username, email='john.snow@gmail.com', password=password)
+
+        pact = G(Pact, creator=creator, goal=10)
+
+        self.assertTrue(self.client.login(username=username, password=password))
+
+        # Run code
+        resp = self.client.post(reverse('pact.api.make_pledge'), {
+            'pact_id': pact.id,
+        }, format='json')
+
+        # Verify expectations
+        self.assertEquals(status.HTTP_201_CREATED, resp.status_code)
+        self.assertTrue(Pledge.objects.filter(pact=pact, account=user).exists())
+        self.assertEquals(2, Pledge.objects.filter(pact=pact).count())
 
 
 class PactTransactionTests(TransactionTestCase):
