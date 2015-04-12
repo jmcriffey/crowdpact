@@ -1,5 +1,6 @@
-from rest_framework import generics, mixins
+from rest_framework import generics, mixins, status
 from rest_framework.authentication import SessionAuthentication
+from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 
 from crowdpact.apps.pact.models import Pact
@@ -48,3 +49,21 @@ class EndingSoonPactList(BasePactList):
 
     def get(self, request, *args, **kwargs):
         return self.list(request, *args, **kwargs)
+
+
+class MakePledgeView(generics.GenericAPIView):
+    """
+    Make a pledge to a pact.
+    """
+    authentication_classes = (SessionAuthentication,)
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, *args, **kwargs):
+        try:
+            pact_id = request.DATA['pact_id']
+            Pact.objects.get(id=pact_id).make_pledge(request.user)
+            return Response(status=status.HTTP_201_CREATED)
+        except KeyError:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        except Pact.DoesNotExist:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
