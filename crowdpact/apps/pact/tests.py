@@ -34,7 +34,7 @@ class PactTests(TestCase):
         pact = Pact.objects.create(name='Test pact', creator=act, goal=3, deadline=datetime(2015, 1, 1))
 
         # Verify expectations
-        self.assertEqual(1, Pledge.objects.filter(pact=pact).count())
+        self.assertEqual(1, Pledge.objects.filter(pact=pact, account=pact.creator).count())
 
     @patch('crowdpact.apps.pact.models.send_notifications', spec_set=True)
     @patch('crowdpact.apps.pact.models.create_notifications_for_users', spec_set=True)
